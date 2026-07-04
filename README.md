@@ -63,21 +63,21 @@
 
 ## 🚀 使用方法
 
-### 1️⃣ 安装
+### 1️⃣ 30S安装
 
 **① 一行命令（最快）**：
 
 ```bash
-npx skills add https://github.com/onlyLT/wow-gongwen-writing --skill wow-gongwen-writing
+npx skills add https://github.com/onlyLT/wow-gongwen-writing --skill gongwen-writing
 ```
 
 **② 让有 shell 权限的 AI Agent 帮你装（复制这段话直接发）**：
 
 ```text
-帮我安装 wow-gongwen-writing。请把 https://github.com/onlyLT/wow-gongwen-writing 克隆到 ~/.claude/skills/wow-gongwen-writing
+帮我安装公文写作 skill。请把 https://github.com/onlyLT/wow-gongwen-writing 克隆到 ~/.claude/skills/ 目录下（克隆后该目录里应能看到 SKILL.md）
 ```
 
-**③ 手动放进 skills 目录**：下载 / 克隆本仓库后，把整个目录放进你的 agent 的 skills 加载路径即可——Claude Code 放进 `~/.claude/skills/wow-gongwen-writing/`，重启后自然触发；其他 Agent Skills 兼容平台放进各自对应的路径。
+**③ 手动放进 skills 目录**：下载 / 克隆本仓库后，把整个目录放进你的 agent 的 skills 加载路径即可——如Claude Code 放进 `~/.claude/skills`目录下，重启后自然触发；其他 Agent Skills 兼容平台放进各自对应的路径。
 
 > 核心写作能力**零依赖**，任何 Agent Skills 兼容 harness 都能跑（导出 Word 是可选能力，见下）。安装后技能触发名为 `gongwen-writing`。
 
@@ -120,7 +120,7 @@ python scripts/export_docx.py spec.json       # 生成 Word
 
 ---
 
-## 🎬 精选案例演示
+## 🎬 案例演示
 
 > 按**行文方向**精选，覆盖上行 / 下行 / 平行 / 事务性四类典型场景。带 ★ 的为真实生成产物，可在 [`examples/`](./examples) 下载完整 `.docx`。
 
@@ -173,7 +173,7 @@ python scripts/export_docx.py spec.json       # 生成 Word
 <summary>📖 点击展开成稿片段</summary>
 
 > **××县教育局关于申请增拨2026年校舍维修改造专项资金的请示**
-> ××县财政局：
+> ××县人民政府：
 >
 > 　　2026年汛期以来，我县部分中小学校舍受强降雨影响出现屋面渗漏、墙体开裂等安全隐患，经排查涉及**【待补：××】**所学校，直接影响师生安全和秋季学期正常开学。为消除隐患、保障教育教学秩序，拟对上述校舍实施维修改造，经测算共需资金**【待补：××】**万元，现有预算难以满足。
 >
@@ -234,9 +234,8 @@ python scripts/export_docx.py spec.json       # 生成 Word
 
 ---
 
-## 📊 效果 = 规范把关
+## 📊  规范把关
 
-> ⚠️ 这里给的是**能力对比**（见上方"这是什么"三方对比表），不是用户好评——我们不放"某某说好用"的截图，而是让规范性自己说话。以下是每次成稿都会自动过一遍的把关项：
 
 ### 内建的规范把关（每次成稿自动过一遍）
 
