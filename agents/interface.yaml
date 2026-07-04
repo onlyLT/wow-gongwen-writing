@@ -1,0 +1,82 @@
+# Agent interface contract for gongwen-writing
+# Aligns with SKILL.md router. Keep in sync when SKILL.md changes.
+
+# —— 跨平台打包契约（cross_packager 必需）——
+interface:
+  display_name: "公文写作（政府口径）"
+  short_description: "中国体制内公文起草：法定公文+事务性材料，先出大纲再逐段填，可导出 GB/T 9704 版式 Word"
+  default_prompt: "用 gongwen-writing 帮我起草一份【文种，如通知/请示/报告/专报】：先判文种与行文方向、出大纲让我确认，再逐段填成稿并做版式与行文规则校验；需要时导出为 Word。"
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets: ["openai", "claude", "generic", "vscode"]
+  activation:
+    mode: "manual"
+    paths: []
+  execution:
+    context: "inline"
+    shell: "bash"
+  trust:
+    source_tier: "local"
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-metadata-only"
+  degradation:
+    # 核心写作零依赖；Word 导出需 python-docx，缺失即降级为交付 markdown/文本
+    claude: "neutral-source-plus-adapter; export_docx optional (needs python-docx), else deliver markdown"
+    openai: "metadata-adapter; export_docx optional (needs python-docx), else deliver markdown"
+    generic: "neutral-source; export_docx optional, else deliver markdown"
+    vscode: "agent-skills-source-with-vscode-notes; export_docx optional"
+
+skill: gongwen-writing
+version: 0.1.0
+mode: production            # 团队可复用；非 governed（政治终审仍由人把关）
+owner: 用户（体制内文秘/办公室）
+review_cadence: 需求驱动
+
+job: >
+  将零散要点、领导意图、素材，起草为规范得体的政府口径公文（法定公文 + 事务性材料）。
+
+inputs:
+  - name: 文种意图
+    desc: 要写什么（不确定则由 skill 依意图推荐）
+    required: true
+  - name: 行文要素
+    desc: 发文机关 / 主送机关 / 行文方向（上行·下行·平行）
+    required: true
+  - name: 事由与诉求
+    desc: 核心事项、目的、依据文件
+    required: true
+  - name: 关键事实与数据
+    desc: 时间、地点、数字、落款；缺则以 【待补：xx】 占位
+    required: false
+
+output_contract:
+  - stage: 大纲     # 默认先出
+    produces: 标题（发文机关+事由+文种）+ 分层骨架；停下等用户确认
+  - stage: 成稿
+    produces: 完整正文（含版式位置提示）
+  - stage: 校验清单
+    produces: 版式/行文规则/政治性/风险点逐条 + 【待补】汇总
+
+out_of_scope:
+  - 党委/纪检/组织/宣传强政治口径专稿的政治终审（可起草，须人把关）
+  - 法律文书、合同、判决书
+  - 对外新闻通稿、营销文案
+  - 涉密、重大决策表述的保密与核稿把关（提示交本单位核稿人）
+
+references:
+  - references/wenzhong-handbook.md       # 文种手册（起草前必读对应条目）
+  - references/format-gbt9704.md          # GB/T 9704-2012 版式与行文规则
+  - references/style-and-diction.md       # 政府口径文风与用语
+  - references/negative-checklist.md      # 成稿前负面清单自查
+templates:
+  - templates/fading-gongwen-skeletons.md
+  - templates/shiwu-material-skeletons.md
+scripts:
+  - path: scripts/export_docx.py    # 通用公文→docx（JSON 驱动，任意文种）
+    deps: scripts/requirements.txt  # python-docx
+
+gates:
+  - 文种与行文方向判定（硬项：方向/文种错即卡）
+  - GB/T 9704 版式要素齐全与写法规范
+  - 行文规则（一文一事·单主送·报告不夹带请示等）
+  - 政治性表述准确、重大表述提示人工终审
