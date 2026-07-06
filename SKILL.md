@@ -40,7 +40,7 @@ metadata:
 3. **先出大纲/框架**：给出标题（发文机关+事由+文种）+ 分层骨架（每段一句话点明要写什么），**停下来等用户确认**。大纲骨架取自 `references/wenzhong-handbook.md` 对应文种的"结构骨架"。
 4. **逐段填成稿**：确认后按骨架展开为完整正文，语言按 `references/style-and-diction.md`（政府口径文风、开头结尾套路、称谓用语）；标题拟写、谋篇分条、素材化用按 `references/craft-principles.md`（标题技法、分条法则、种子例句——仿写不粘贴）；并对照 `references/negative-checklist.md` 自查雷区。
 5. **版式与规则校验**：按 `references/format-gbt9704.md` 核对版式要素（标题、主送、发文字号、成文日期、附件说明、抄送、印章位等）与《党政机关公文处理工作条例》行文规则，输出一份「校验清单」随稿附上。
-6. **导出 Word（按需）**：用户要 .docx 时，把成稿组织成 JSON 规格喂给 `scripts/export_docx.py`，产出 GB/T 9704 近似版式的公文（红头/报头、发文字号、仿宋三号正文、黑体标题、署名日期等）。用法见下。
+6. **导出 Word（按需）**：用户要 .docx 时，把成稿组织成 JSON 规格喂给 `scripts/export_docx.py`，产出 GB/T 9704 近似版式的公文（红头/报头、发文字号、署名日期等；标题=方正小标宋二号，一级标题=黑体、二级=楷体、三级=仿宋加粗、正文=仿宋，均三号）。用法见下。
 
 单文种成稿骨架见 `templates/`（可作为第 3 步大纲的加速起点）。
 
@@ -60,7 +60,7 @@ python scripts/export_docx.py --demo demo.json    # 生成示例 JSON 参考
 ```
 
 - JSON 字段与正文块类型（`text`/`h1`/`h2`/`plain`、`red_header`/`brief_header`/`signer`/`wenhao`/`title`/`zhusong`/`signoff_*`/`fuzhu` 等）见 `scripts/export_docx.py` 顶部文档字符串——**编 JSON 前先读它**。
-- 字体缺省用系统通用「仿宋/黑体/宋体」；若单位要求「仿宋_GB2312/方正小标宋」等标准字体，在 JSON 的 `fonts` 里覆盖（需本机已装）。
+- 字体缺省即 GB/T 9704 标准层级（经实际发文核校）：标题=方正小标宋简体二号加粗、一级标题(h1)=黑体、二级标题(h2)=楷体_GB2312、三级标题(h3)=仿宋_GB2312 加粗、正文=仿宋_GB2312（标题外均三号）。单位另有要求时在 JSON 的 `fonts` 里覆盖；本机未装的字体 Word 会自动替换，不影响生成。
 - 依赖 `python-docx`（`pip install -r scripts/requirements.txt`）。生成后 `【待补】` 占位仍保留，提示用户填定。
 
 **可移植性与降级（跨 agent 平台运行时）**：本 skill 的**核心写作能力零依赖**——第 1–5 步只产出 markdown/纯文本，任何 Agent Skills 兼容的 harness 都能跑。第 6 步导出 Word 是**可选能力**：

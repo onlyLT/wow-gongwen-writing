@@ -24,10 +24,11 @@ JSON 规格（所有字段可选，缺省即不出该要素）：
   "title": "××关于××的报告",              // 标题（居中，二号）
   "zhusong": "金华市财政局：",             // 主送机关（顶格）
   "body": [                                // 正文块，按顺序渲染
-    {"h1": "一、主要做法", "text": "……"}, // 黑体标题 + 仿宋同段正文（run-on）
+    {"h1": "一、主要做法", "text": "……"}, // 一级标题（黑体）+ 仿宋同段正文（run-on）
     {"text": "普通正文段落，自动首行缩进2字"},
     {"h1": "二、存在的问题"},              // 独立标题行（无 text）
-    {"h2": "（一）小标题", "text": "……"}, // 二级标题（黑体）+ 正文
+    {"h2": "（一）小标题", "text": "……"}, // 二级标题（楷体）+ 正文
+    {"h3": "1．小节标题"},                 // 三级标题（仿宋加粗），如"1．基本支出预算"
     {"plain": "自由行", "align": "center", "font": "楷体", "size": 14, "no_indent": true}
   ],
   "signoff_name": "武义县财政局",           // 署名（右对齐）
@@ -40,11 +41,13 @@ JSON 规格（所有字段可选，缺省即不出该要素）：
 正文块类型：
   {"text": "..."}                  普通正文段（仿宋三号，首行缩进2字）
   {"h1": "一、…", "text": "..."}    一级标题（黑体三号）+ 可选同段正文
-  {"h2": "（一）…", "text": "..."}  二级标题（黑体三号）+ 可选同段正文
+  {"h2": "（一）…", "text": "..."}  二级标题（楷体三号）+ 可选同段正文
+  {"h3": "1．…", "text": "..."}     三级标题（仿宋三号加粗）+ 可选同段正文
   {"plain": "...", ...}            自由行，可带 align/font/size/bold/color/no_indent
 
-字体缺省：正文/附注=仿宋，一二级标题=黑体，标题/红头=宋体加粗。
-如需标准字体，在 fonts 里改为「仿宋_GB2312 / 楷体_GB2312 / 方正小标宋_GB2312」等
+字体缺省（GB/T 9704 标准层级，经实际发文核校）：标题=方正小标宋简体二号加粗，
+一级标题=黑体三号，二级标题=楷体_GB2312 三号，三级标题=仿宋_GB2312 三号加粗，
+正文/附注=仿宋_GB2312，红头=宋体加粗。可在 fonts 里覆盖任一层级
 （需本机已安装；未安装时 Word 会自动替换，不影响生成）。
 
 依赖：python-docx（pip install python-docx）
@@ -59,8 +62,10 @@ from docx.oxml import OxmlElement
 RED = RGBColor(0xFF, 0x00, 0x00)
 ALIGN = {"left": WD_ALIGN_PARAGRAPH.LEFT, "center": WD_ALIGN_PARAGRAPH.CENTER,
          "right": WD_ALIGN_PARAGRAPH.RIGHT, "justify": WD_ALIGN_PARAGRAPH.JUSTIFY}
-DEFAULT_FONTS = {"body": "仿宋", "h1": "黑体", "h2": "黑体",
-                 "title": "宋体", "header": "宋体"}
+# 层级用字（经实际公文核校）：标题=方正小标宋二号，一级=黑体三号，
+# 二级=楷体三号，三级=仿宋三号加粗，正文=仿宋三号。未装字体时 Word 自动替换。
+DEFAULT_FONTS = {"body": "仿宋_GB2312", "h1": "黑体", "h2": "楷体_GB2312",
+                 "h3": "仿宋_GB2312", "title": "方正小标宋简体", "header": "宋体"}
 
 
 def set_font(run, cn, size=16, bold=False, color=None):
@@ -138,7 +143,7 @@ def build(spec):
     # —— 标题 ——
     if spec.get("title"):
         p = new_para(doc, "center", line=36, space_after=6)
-        add_run(p, spec["title"], fonts["title"], 20, True)
+        add_run(p, spec["title"], fonts["title"], 22, True)
 
     # —— 主送 ——
     if spec.get("zhusong"):
@@ -155,10 +160,10 @@ def build(spec):
             add_run(p, blk["plain"], blk.get("font", fonts["body"]),
                     blk.get("size", 16), blk.get("bold", False), color)
             continue
-        head_key = "h1" if "h1" in blk else ("h2" if "h2" in blk else None)
+        head_key = next((k for k in ("h1", "h2", "h3") if k in blk), None)
         if head_key:
             p = new_para(doc, "left", line=29, first_indent=32)
-            add_run(p, blk[head_key], fonts[head_key], 16)
+            add_run(p, blk[head_key], fonts[head_key], 16, bold=(head_key == "h3"))
             if blk.get("text"):
                 add_run(p, blk["text"], fonts["body"], 16)
         elif "text" in blk:
