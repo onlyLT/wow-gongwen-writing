@@ -27,7 +27,7 @@ compatibility:
     vscode: "agent-skills-source-with-vscode-notes; export_docx optional"
 
 skill: wow-gongwen-writing
-version: 0.2.0
+version: 0.2.1
 mode: production            # 团队可复用；非 governed（政治终审仍由人把关）
 owner: 用户（体制内文秘/办公室）
 review_cadence: 需求驱动

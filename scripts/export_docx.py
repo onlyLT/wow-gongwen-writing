@@ -50,6 +50,11 @@ JSON 规格（所有字段可选，缺省即不出该要素）：
 正文/附注=仿宋_GB2312，红头=宋体加粗。可在 fonts 里覆盖任一层级
 （需本机已安装；未安装时 Word 会自动替换，不影响生成）。
 
+不支持的版式要素（GB/T 9704 有、本导出器不产出）：份号、密级和保密期限、
+紧急程度、抄送机关、版记（印发机关和印发日期）、页码、印章。
+需要时可用 plain 块近似模拟（如抄送行），或在交付说明中注明由办公室
+套红头模板补全。编 spec 时不要臆造上述字段名——脚本会静默忽略未知字段。
+
 依赖：python-docx（pip install python-docx）
 """
 import sys, json, argparse
@@ -153,7 +158,6 @@ def build(spec):
     # —— 正文块 ——
     for blk in spec.get("body", []):
         if "plain" in blk:
-            fi = None if blk.get("no_indent") else Pt(blk.get("size", 16) * 2)
             p = new_para(doc, blk.get("align"), line=blk.get("line", 29),
                          first_indent=(blk.get("size", 16) * 2 if not blk.get("no_indent") else None))
             color = RED if blk.get("color") == "red" else None
