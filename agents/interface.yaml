@@ -27,7 +27,7 @@ compatibility:
     vscode: "agent-skills-source-with-vscode-notes; export_docx optional"
 
 skill: wow-gongwen-writing
-version: 0.2.2
+version: 0.3.0
 mode: production            # 团队可复用；非 governed（政治终审仍由人把关）
 owner: 用户（体制内文秘/办公室）
 review_cadence: 需求驱动
@@ -54,9 +54,11 @@ output_contract:
   - stage: 大纲     # 默认先出
     produces: 标题（发文机关+事由+文种）+ 分层骨架；停下等用户确认
   - stage: 成稿
-    produces: 完整正文（含版式位置提示）
+    produces: 起草说明（纠正/取舍/推定，有才写）+ 完整正文（▍版式位置标签）
   - stage: 校验清单
-    produces: 版式/行文规则/政治性/风险点逐条 + 【待补】汇总
+    produces: 版式/行文规则/政治性/风险点逐条 + 须核实项 + 三类占位符汇总（关键项标★）
+  - stage: 改稿诊断
+    produces: P0/P1/P2 诊断表 + ≤3 个待确认问题；用户说"直接改"时连同修改稿一次交付
 
 out_of_scope:
   - 党委/纪检/组织/宣传强政治口径专稿的政治终审（可起草，须人把关）
@@ -66,10 +68,12 @@ out_of_scope:
 
 references:
   - references/wenzhong-handbook.md       # 文种手册（起草前必读对应条目）
-  - references/format-gbt9704.md          # GB/T 9704-2012 版式与行文规则
+  - references/xingwen-rules.md           # 行文关系判定与行文规则（条例第十三～十七条）
+  - references/format-gbt9704.md          # GB/T 9704-2012 版式要素与特定格式
   - references/style-and-diction.md       # 政府口径文风与用语
   - references/negative-checklist.md      # 成稿前负面清单自查
   - references/craft-principles.md        # 写作内功：标题/谋篇/造句法则、语言十弊、改稿七步与P0/P1/P2
+  - references/export-docx-notes.md       # 导出 Word 操作手册（第 6 步前必读）
 templates:
   - templates/fading-gongwen-skeletons.md
   - templates/shiwu-material-skeletons.md
@@ -80,5 +84,6 @@ scripts:
 gates:
   - 文种与行文方向判定（硬项：方向/文种错即卡）
   - GB/T 9704 版式要素齐全与写法规范
-  - 行文规则（一文一事·单主送·报告不夹带请示等）
+  - 行文规则（一文一事·单主送·报告不夹带请示·部门不向下级政府发指令等；用户指定的违规结构直接纠正）
+  - 事实不杜撰（已发生的事实与数据只用【待补】占位，【示意·待核】仅限代拟的设计性内容）
   - 政治性表述准确、重大表述提示人工终审

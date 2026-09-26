@@ -11,3 +11,6 @@ Thumbs.db
 # 临时导出
 *.tmp
 ~$*.docx
+
+# 本地打包快照（分发包见上级目录 dist/）
+SKILL.zip
